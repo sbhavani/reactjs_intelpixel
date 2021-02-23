@@ -1,11 +1,11 @@
 import axios from "axios";
-import { mainUrl1 } from "./constant";
-export function getaxiosInstanceOn() {
-  var axiosInstanceOn;
+export function getaxiosInstance() {
+  var axiosInstance;
+  var mainUrl = 'http://104.211.119.180:8080';
   if(localStorage.getItem("user") && localStorage.getItem("user") !== undefined){
 
-    axiosInstanceOn = axios.create({
-      baseURL: mainUrl1,
+    axiosInstance = axios.create({
+      baseURL: mainUrl,
   
       headers: {
         "Content-Type": "application/json",
@@ -15,8 +15,8 @@ export function getaxiosInstanceOn() {
 }
 else
 {
-  axiosInstanceOn = axios.create({
-    baseURL: mainUrl1,
+  axiosInstance = axios.create({
+    baseURL: mainUrl,
 
     headers: {
       "Content-Type": "application/json",
@@ -24,7 +24,7 @@ else
   });
 }
   
-  axiosInstanceOn.interceptors.response.use(
+  axiosInstance.interceptors.response.use(
     function (response) {
       // some unnecessary defensive programming
       if (response !== undefined) {
@@ -38,5 +38,5 @@ else
     }
   );
 
-  return axiosInstanceOn;
+  return axiosInstance;
 }
