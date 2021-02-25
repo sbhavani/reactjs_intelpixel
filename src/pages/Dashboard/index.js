@@ -1,14 +1,13 @@
 import React, { Fragment, useState, useEffect } from "react";
 import "./style.css";
 import intelpixel from "../../images/intelpixel.png";
-import xray from "../../images/xray.jpg"; 
-import avatar from "../../images/0.jpg"; 
+import xray from "../../images/xray.jpg";
+import avatar from "../../images/0.jpg";
 import { getFiltersApi, getElasticSearchApi } from "../../services/api";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
+import { useHistory } from "react-router-dom";
 
 let Dashboard = (props) => {
-  const [count, setCount] = useState(true);
+  const history = useHistory();
   const [changeCheck, setChangeCheck] = useState(false);
   const [changeModality, setChangeModality] = useState(false);
   const [changeBodyPart, setChangeBodyPart] = useState(false);
@@ -27,8 +26,8 @@ let Dashboard = (props) => {
   const [arrProcedure, setArrProcedure] = useState([]);
   const [arrTechnical, setArrTechnical] = useState([]);
   const [arrBodyPart, setArrBodyPart] = useState([]);
-  const [startDate, setStartDate] = useState(new Date());
-  const [startDateOpen, setStartDateOpen] = useState(false);
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
   useEffect(() => {
     getFilters("finding", "");
@@ -50,12 +49,19 @@ let Dashboard = (props) => {
     var queryModality = convertQueryParam(arrModality);
     var queryBodyPart = convertQueryParam(arrBodyPart);
 
-    if (queryModality != "") {
-      query = `?modality=${queryModality}`;
+    query = `?modality=${queryModality == "" ? null : queryModality}`;
+
+    if (query == "") {
+      query = `?body_part=${queryBodyPart == "" ? null : queryBodyPart}`;
+    } else {
+      query =
+        query + `&body_part=${queryBodyPart == "" ? null : queryBodyPart}`;
     }
     getFilters("manufacturer", query);
     getFilters("organ/based/on/modality", query);
     getFilters("technicalspecification", query);
+    getFilters("disease/based/on/modality/bodypart", query);
+    getFilters("procedure/based/on/modality/bodypart", query);
   }, [changeModality]);
 
   useEffect(() => {
@@ -63,16 +69,15 @@ let Dashboard = (props) => {
     var queryModality = convertQueryParam(arrModality);
     var queryBodyPart = convertQueryParam(arrBodyPart);
 
-    if (queryModality != "") {
-      query = `?modality=${queryModality}`;
+    query = `?modality=${queryModality == "" ? null : queryModality}`;
+
+    if (query == "") {
+      query = `?body_part=${queryBodyPart == "" ? null : queryBodyPart}`;
+    } else {
+      query =
+        query + `&body_part=${queryBodyPart == "" ? null : queryBodyPart}`;
     }
-    if (queryBodyPart != "") {
-      if (query == "") {
-        query = `?body_part=${queryBodyPart}`;
-      } else {
-        query = query + `&body_part=${queryBodyPart}`;
-      }
-    }
+
     getFilters("disease/based/on/modality/bodypart", query);
     getFilters("procedure/based/on/modality/bodypart", query);
   }, [changeBodyPart]);
@@ -88,18 +93,43 @@ let Dashboard = (props) => {
     var queryProcedure = convertQueryParam(arrProcedure);
     var queryTechnical = convertQueryParam(arrTechnical);
     var queryBodyPart = convertQueryParam(arrBodyPart);
-    if (queryGender != "") query = query + `&gender=${queryGender}`;
-    if (queryFinding != "") query = query + `&findings=${queryFinding}`;
-    if (queryModality != "") query = query + `&modality=${queryModality}`;
+    if (queryGender != "")
+      query = query + `&gender=${queryGender == "" ? null : queryGender}`;
+    if (queryFinding != "")
+      query = query + `&findings=${queryFinding == "" ? null : queryFinding}`;
+    if (queryModality != "")
+      query = query + `&modality=${queryModality == "" ? null : queryModality}`;
     if (queryManufacturer != "")
-      query = query + `&manufacturer=${queryManufacturer}`;
+      query =
+        query +
+        `&manufacturer=${queryManufacturer == "" ? null : queryManufacturer}`;
     if (queryDemographic != "")
-      query = query + `&demographics=${queryDemographic}`;
-    if (queryDisease != "") query = query + `&diesease=${queryDisease}`;
-    if (queryProcedure != "") query = query + `&procedure=${queryProcedure}`;
+      query =
+        query +
+        `&demographics=${queryDemographic == "" ? null : queryDemographic}`;
+    if (queryDisease != "")
+      query = query + `&diesease=${queryDisease == "" ? null : queryDisease}`;
+    if (queryProcedure != "")
+      query =
+        query + `&procedure=${queryProcedure == "" ? null : queryProcedure}`;
     if (queryTechnical != "")
-      query = query + `&technical_specifications=${queryTechnical}`;
-    if (queryBodyPart != "") query = query + `&organ=${queryBodyPart}`;
+      query =
+        query +
+        `&technical_specifications=${
+          queryTechnical == "" ? null : queryTechnical
+        }`;
+    if (queryBodyPart != "")
+      query = query + `&bodypart=${queryBodyPart == "" ? null : queryBodyPart}`;
+    if (startDate != "")
+      query =
+        query +
+        `&start_study_date=${
+          startDate == "" ? null : `${startDate}T00:00:00Z`
+        }`;
+    if (endDate != "")
+      query =
+        query +
+        `&end_study_date=${endDate == "" ? null : `${endDate}T00:00:00Z`}`;
     getElasticSearch(query);
   }, [changeCheck]);
 
@@ -193,7 +223,7 @@ let Dashboard = (props) => {
       });
   };
   return (
-    <div className="container-fluid">
+    <div className="container-fluid dashboardPage">
       <div className="row">
         <aside className="main-sidebar col-12 col-md-3 col-lg-2 px-0">
           <div className="main-navbar">
@@ -599,19 +629,75 @@ let Dashboard = (props) => {
             </div>
 
             <div className="row mb-2 top-category-wrap">
+              {/* <div className="col mb-4">
+                <ul className="nav-item dropdown">
+                  <DatePicker
+                    selected={startDate}
+                    onChange={(date) => setStartDate(date)}
+                    customInput={
+                      <div>
+                        <a
+                          className="nav-link dropdown-toggle text-nowrap px-3"
+                          // data-toggle={"dropdown"}
+                          href="#"
+                          role="button"
+                          aria-haspopup="true"
+                          aria-expanded="false"
+                        >
+                          <span className="d-md-inline-block">Study Date</span>
+                        </a>
+
+                        <div className="dropdown-menu dropdown-menu-small"></div>
+                      </div>
+                    }
+                  />
+                </ul>
+              </div> */}
               <div className="col mb-4">
-                <ul className="nav-item ">
+                <ul className="nav-item dropdown">
                   <a
-                    className="nav-link  text-nowrap px-3"
+                    className="nav-link dropdown-toggle text-nowrap px-3"
+                    data-toggle={"dropdown"}
                     href="#"
-                    onClick={() => {
-                      setStartDateOpen(true);
-                    }}
+                    role="button"
+                    aria-haspopup="true"
+                    aria-expanded="false"
                   >
                     <span className="d-md-inline-block">Study Date</span>
                   </a>
-
-                  <div className="dropdown-menu dropdown-menu-small"></div>
+                  <form className="dropdown-menu dropdown-menu-small">
+                    <div className="dropdown-item">
+                      <label className="mr-2" htmlFor={"start_date"}>
+                        Start Date
+                      </label>
+                      <input
+                        style={{ width: "130px" }}
+                        type="date"
+                        value={startDate.toString()}
+                        max={endDate}
+                        onChange={(e) => {
+                          console.log(e.target.value);
+                          setStartDate(e.target.value);
+                          setChangeCheck(!changeCheck);
+                        }}
+                      />
+                    </div>
+                    <div className="dropdown-item">
+                      <label className="mr-3" htmlFor={"end_date"}>
+                        End Date
+                      </label>
+                      <input
+                        style={{ width: "130px" }}
+                        type="date"
+                        value={endDate.toString()}
+                        min={startDate}
+                        onChange={(e) => {
+                          setEndDate(e.target.value);
+                          setChangeCheck(!changeCheck);
+                        }}
+                      />
+                    </div>
+                  </form>
                 </ul>
               </div>
 
@@ -784,12 +870,17 @@ let Dashboard = (props) => {
             </div>
             {arrElasticSearch.map((element, index) => (
               <div className="row">
-                <div className="card card-small card-post card-post--aside card-post--1 search-item-wrap">
+                <div
+                  className="card card-small card-post card-post--aside card-post--1 search-item-wrap"
+                  style={{ cursor: "pointer" }}
+                  onClick={() => {
+                    history.push(`/detail?_id=${element._id}`);
+                  }}
+                >
                   <div
                     className="card-post__image"
                     style={{
-                      backgroundImage:
-                        `url(${xray})`,
+                      backgroundImage: `url(${xray})`,
                     }}
                   >
                     <a

@@ -5,6 +5,9 @@ export const getFiltersApi = async (filterType,queryParam) => {
 export const getElasticSearchApi = async (queryParam) => {
   return await getaxiosInstance().get(`/api/v1/elasticsearch/get${queryParam}`);
 };
+export const getDetailApi = async (id) => {
+  return await getaxiosInstance().get(`/api/v1/elasticsearch/details/get?_id=${id}`);
+};
 
 
 // export const RegistrationApi = async (params) => {
