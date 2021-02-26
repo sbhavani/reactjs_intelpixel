@@ -16,7 +16,7 @@ let Detail = (props) => {
     infinite: false,
     vertical: false,
     speed: 500,
-    slidesToShow: 4,
+    slidesToShow: 4,swipeToSlide: true    
   };
 
   useEffect(() => {
