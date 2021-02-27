@@ -1,0 +1,25 @@
+{
+  "files": {
+    "main.css": "/static/css/main.9a8b18a2.chunk.css",
+    "main.js": "/static/js/main.61b5fd62.chunk.js",
+    "main.js.map": "/static/js/main.61b5fd62.chunk.js.map",
+    "runtime-main.js": "/static/js/runtime-main.2c4440f2.js",
+    "runtime-main.js.map": "/static/js/runtime-main.2c4440f2.js.map",
+    "static/js/2.053e6a08.chunk.js": "/static/js/2.053e6a08.chunk.js",
+    "static/js/2.053e6a08.chunk.js.map": "/static/js/2.053e6a08.chunk.js.map",
+    "static/js/3.106737f1.chunk.js": "/static/js/3.106737f1.chunk.js",
+    "static/js/3.106737f1.chunk.js.map": "/static/js/3.106737f1.chunk.js.map",
+    "index.html": "/index.html",
+    "static/css/main.9a8b18a2.chunk.css.map": "/static/css/main.9a8b18a2.chunk.css.map",
+    "static/js/2.053e6a08.chunk.js.LICENSE.txt": "/static/js/2.053e6a08.chunk.js.LICENSE.txt",
+    "static/media/0.31da962b.jpg": "/static/media/0.31da962b.jpg",
+    "static/media/intelpixel.436cc0ea.png": "/static/media/intelpixel.436cc0ea.png",
+    "static/media/xray.f4dcc8f2.jpg": "/static/media/xray.f4dcc8f2.jpg"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.2c4440f2.js",
+    "static/js/2.053e6a08.chunk.js",
+    "static/css/main.9a8b18a2.chunk.css",
+    "static/js/main.61b5fd62.chunk.js"
+  ]
+}
