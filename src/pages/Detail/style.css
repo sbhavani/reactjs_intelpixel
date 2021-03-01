@@ -17,8 +17,8 @@
 .detailPage .mb-30{margin-bottom:30px;}
 .detailPage .mb-20{margin-bottom:20px;}
 .detailPage .mb-10{margin-bottom:10px;}
-.detailPage .detail-image-box{width:45%;min-width:45%;position:relative;overflow:hidden;}
-.detailPage .detail-image-box img{max-width:100%;}
+.detailPage .detail-image-box{width:40%;min-width:40%;position:relative;overflow:hidden;}
+.detailPage .detail-image-box img{max-width:100%;width:100%;height:100%;object-fit:cover;object-position:center;vertical-align:middle;}
 .detailPage .icon-list-wrap ul{margin:0;padding:0;list-style-type:none;}
 .detailPage .icon-list-wrap ul li{margin:0 0 10px;position:relative;padding-left:35px;}
 .detailPage .detail-info-wrap .card.card-post{overflow:hidden}
@@ -34,7 +34,7 @@
 .detailPage .rating-list img{width:26px;height:26px;object-fit:cover;margin:0 7px 0 0;vertical-align:middle;}
 .detailPage .rating-list img:last-child{margin-right:0;}
 .detailPage .detail-info-wrap .detail-btn-wrap{margin-top:25px;}
-.detailPage .detail-btn-wrap .btn{margin:0 15px 0 0;min-width:120px;text-align:center;font-size:14px;}
+.detailPage .detail-btn-wrap .btn{margin:0 15px 0 0;min-width:140px;text-align:center;font-size:14px;}
 .detailPage .similar-data-wrap h2{font-size:1.5rem;font-weight:500;margin:0 0 15px}
 .detailPage .similar-data-wrap .card{height:100%}
 .detailPage .detail-contact-form .card-header h3{margin:0 0 7px;}
@@ -44,9 +44,24 @@
 .detailPage .top-category-wrap .search-date-input{width:250px}
 .detailPage .top-category-wrap .search-date-input input.form-control{background:transparent;font-weight:400}
 .detailPage .detail-info-wrap .card.card-post{overflow:hidden}
+.top-category-wrap .dropdown-menu-small .dropdown-item input{border:1px solid #ddd;padding:4px 5px 4px 10px;-webkit-border-radius:3px;border-radius:3px;outline:none;}
+.detail-image-box .detail-big-img{text-align:center;height:450px;position:relative;}
+.detail-image-box .slick-slide .slider-btm-img{height:115px;vertical-align:top;border:2px solid #fff;cursor:pointer;-webkit-transition:all 0.35s ease 0s;transition:all 0.35s ease 0s;}
+.detail-image-box .slick-slide.slick-current .slider-btm-img{border-color:#007bff;}
+.detail-image-box .slick-slide .slider-btm-img img{max-width:100%;width:100%;height:100%;object-fit:cover;object-position:center;vertical-align:middle;}
+.detail-image-box .slick-slider .slick-arrow{z-index:1;right:20px;width:26px;height:22px;top:0;bottom:0;margin:auto;-webkit-transform:none;transform:none}
+.detail-image-box .slick-slider .slick-prev{left:15px;right:auto;}
+.detail-image-box .slick-slider .slick-next {right:15px;left:auto;}
+.detail-image-box .slick-slider .slick-arrow:before{font-size:26px;opacity:1;color:#007bff;}
+.detail-image-box .slick-slider .slick-arrow.slick-disabled{opacity:0.5;cursor:not-allowed;}
 
 
 /*Responsive*/
+@media only screen and (max-width:1024px){
+.detail-image-box .detail-big-img{height:400px}
+.detail-image-box .slick-slide .slider-btm-img{height:100px}
+}
+
 @media only screen and (max-width:992px){
 .detailPage .detail-info-wrap .card.card-post{display:block}
 .detailPage .detail-image-box{width:100%;min-width:100%;}
@@ -57,7 +72,12 @@
 .detailPage .main-navbar .navbar{height:4.05rem}
 .detailPage .top-category-wrap .col.mb-4{margin-bottom:1rem!important;}
 .detailPage .main-sidebar .nav-wrapper{height:calc(100vh - 3.75rem - 51px)}
-.detailPage .main-content>.main-content-container.container-fluid{padding-left:15px !important;padding-right:15px !important;}
+.detailPage .main-content>.main-content-container.container-fluid{padding-left:15px !important;padding-right:15px !important}
+.detail-image-box .detail-big-img{height:350px}
+.detail-image-box .slick-slide .slider-btm-img{height:75px}
+.detail-image-box .slick-slider .slick-arrow{height:20px;}
+.detail-image-box .slick-slider .slick-prev{left:10px}
+.detail-image-box .slick-slider .slick-next{right:10px;}
 }
 
 @media only screen and (max-width:480px){
@@ -65,7 +85,7 @@
 .detailPage .search-item-wrap.card-post--aside .card-post__image{border-radius:.625rem .625rem 0 0;}
 .detailPage .list-tag-wrap .text-muted{margin-right:10px;padding-left:20px;}
 .detailPage .detail-btn-wrap{text-align:center;}
-.detailPage .detail-btn-wrap .btn{margin:15px 7px 0;font-size:13px;}
+.detailPage .detail-btn-wrap .btn{margin:15px 7px 0;font-size:13px;min-width:125px;}
 .detailPage .main-navbar .navbar a.navbar-brand{flex:0 0 28.666667%;max-width:28.666667%;}
 .detailPage .main-navbar .navbar a.navbar-brand img#main-logo{max-width:100%}
 }

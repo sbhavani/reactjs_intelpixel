@@ -13,7 +13,8 @@ let Dashboard = (props) => {
   const [changeBodyPart, setChangeBodyPart] = useState(false);
   const [arrElasticSearch, setArrElasticSearch] = useState([]);
   const [rating, setRating] = useState(2);
-  const [age, setAge] = useState(100);
+  const [ageMin, setAgeMin] = useState(99.9);
+  const [ageMax, setAgeMax] = useState(99.9);
   const [arrGender, setArrGender] = useState([
     { name: "Female", check: false },
     { name: "Male", check: false },
@@ -30,7 +31,7 @@ let Dashboard = (props) => {
   const [endDate, setEndDate] = useState("");
 
   useEffect(() => {
-    getFilters("finding", "");
+    // getFilters("finding", "");
     getFilters("demographic", "");
     getFilters("modality", "");
   }, []);
@@ -59,8 +60,8 @@ let Dashboard = (props) => {
     }
     getFilters("manufacturer", query);
     getFilters("organ/based/on/modality", query);
-    getFilters("technicalspecification", query);
-    getFilters("disease/based/on/modality/bodypart", query);
+    // getFilters("technicalspecification", query);
+    // getFilters("disease/based/on/modality/bodypart", query);
     getFilters("procedure/based/on/modality/bodypart", query);
   }, [changeModality]);
 
@@ -78,12 +79,12 @@ let Dashboard = (props) => {
         query + `&body_part=${queryBodyPart == "" ? null : queryBodyPart}`;
     }
 
-    getFilters("disease/based/on/modality/bodypart", query);
+    // getFilters("disease/based/on/modality/bodypart", query);
     getFilters("procedure/based/on/modality/bodypart", query);
   }, [changeBodyPart]);
 
   useEffect(() => {
-    var query = `?age=${age}&ratings=${rating}`;
+    var query = `?patient_age=${ageMin},${ageMax}`;
     var queryGender = convertQueryParam(arrGender);
     var queryFinding = convertQueryParam(arrFinding);
     var queryModality = convertQueryParam(arrModality);
@@ -94,9 +95,9 @@ let Dashboard = (props) => {
     var queryTechnical = convertQueryParam(arrTechnical);
     var queryBodyPart = convertQueryParam(arrBodyPart);
     if (queryGender != "")
-      query = query + `&gender=${queryGender == "" ? null : queryGender}`;
-    if (queryFinding != "")
-      query = query + `&findings=${queryFinding == "" ? null : queryFinding}`;
+      query = query + `&patient_sex=${queryGender == "" ? null : queryGender}`;
+    // if (queryFinding != "")
+    //   query = query + `&findings=${queryFinding == "" ? null : queryFinding}`;
     if (queryModality != "")
       query = query + `&modality=${queryModality == "" ? null : queryModality}`;
     if (queryManufacturer != "")
@@ -106,18 +107,18 @@ let Dashboard = (props) => {
     if (queryDemographic != "")
       query =
         query +
-        `&demographics=${queryDemographic == "" ? null : queryDemographic}`;
-    if (queryDisease != "")
-      query = query + `&diesease=${queryDisease == "" ? null : queryDisease}`;
+        `&geography=${queryDemographic == "" ? null : queryDemographic}`;
+    // if (queryDisease != "")
+    //   query = query + `&diesease=${queryDisease == "" ? null : queryDisease}`;
     if (queryProcedure != "")
       query =
         query + `&procedure=${queryProcedure == "" ? null : queryProcedure}`;
-    if (queryTechnical != "")
-      query =
-        query +
-        `&technical_specifications=${
-          queryTechnical == "" ? null : queryTechnical
-        }`;
+    // if (queryTechnical != "")
+    //   query =
+    //     query +
+    //     `&technical_specifications=${
+    //       queryTechnical == "" ? null : queryTechnical
+    //     }`;
     if (queryBodyPart != "")
       query = query + `&bodypart=${queryBodyPart == "" ? null : queryBodyPart}`;
     if (startDate != "")
@@ -262,7 +263,7 @@ let Dashboard = (props) => {
 
           <div className="nav-wrapper">
             <ul className="nav flex-column">
-              <li className="nav-item">
+              {/* <li className="nav-item">
                 <h3>RATING</h3>
                 <div className="custom-control custom-radio mb-1">
                   <input
@@ -312,7 +313,7 @@ let Dashboard = (props) => {
                     {"Rating > 4"}
                   </label>
                 </div>
-              </li>
+              </li> */}
 
               <li className="nav-item">
                 <h3>GENDER</h3>
@@ -342,7 +343,7 @@ let Dashboard = (props) => {
                 ))}
               </li>
 
-              {arrFinding.length > 0 && (
+              {/* {arrFinding.length > 0 && (
                 <li className="nav-item">
                   <h3>FINDINGS</h3>
                   {arrFinding.map((element, index) => (
@@ -370,7 +371,7 @@ let Dashboard = (props) => {
                     </div>
                   ))}
                 </li>
-              )}
+              )} */}
 
               {arrModality.length > 0 && (
                 <li className="nav-item">
@@ -432,28 +433,56 @@ let Dashboard = (props) => {
                   ))}
                 </li>
               )}
-
               <li className="nav-item">
                 <h3>AGE</h3>
                 <div className="age-range mb-1">
-                  <input
+                <div class='range-slider'>
+              <input type="range" min="0" max="99.9" step="1" v-model="sliderMin" value={ageMin} onPointerUp={() => {
+                      setChangeCheck(!changeCheck);
+                    }} onChange={(e) => {
+                var min = e.target.value;
+                var max = ageMax;
+                if (min > max) {
+                  var tmp = max;
+                  max = min;
+                  min = tmp;
+                }
+                      setAgeMin(min);
+                      setAgeMax(max);
+                    }}/>
+              <input type="range" min="0" max="99.9" step="1" v-model="sliderMax" value={ageMax} onPointerUp={() => {
+                      setChangeCheck(!changeCheck);
+                    }} onChange={(e) => {
+                      var min = ageMin;
+                var max = e.target.value;
+                if (min > max) {
+                  var tmp = max;
+                  max = min;
+                  min = tmp;
+                }
+                      setAgeMin(min);
+                      setAgeMax(max);
+                    
+                    }}/>
+            </div>
+                  {/* <input
                     onPointerUp={() => {
                       setChangeCheck(!changeCheck);
                     }}
                     type="range"
                     value={age}
                     min="0.1"
-                    max="100"
+                    max="99.9"
                     onChange={(e) => {
                       setAge(e.target.value);
                     }}
-                  ></input>
+                  ></input> */}
                 </div>
               </li>
 
               {arrDemographic.length > 0 && (
                 <li className="nav-item">
-                  <h3>DEMOGRAPHICS</h3>
+                  <h3>GEOGRAPHICS</h3>
                   {arrDemographic.map((element, index) => (
                     <div
                       key={index}
@@ -663,7 +692,7 @@ let Dashboard = (props) => {
                     aria-haspopup="true"
                     aria-expanded="false"
                   >
-                    <span className="d-md-inline-block">Study Date</span>
+                    <span className="d-md-inline-block">Upload Date</span>
                   </a>
                   <form className="dropdown-menu dropdown-menu-small">
                     <div className="dropdown-item">
@@ -671,7 +700,7 @@ let Dashboard = (props) => {
                         Start Date
                       </label>
                       <input
-                        style={{ width: "130px" }}
+                        style={{ width: "140px" }}
                         type="date"
                         value={startDate.toString()}
                         max={endDate}
@@ -687,7 +716,7 @@ let Dashboard = (props) => {
                         End Date
                       </label>
                       <input
-                        style={{ width: "130px" }}
+                        style={{ width: "140px" }}
                         type="date"
                         value={endDate.toString()}
                         min={startDate}
@@ -701,7 +730,7 @@ let Dashboard = (props) => {
                 </ul>
               </div>
 
-              <div className="col mb-4">
+              {/* <div className="col mb-4">
                 <ul className="nav-item dropdown">
                   <a
                     className="nav-link dropdown-toggle text-nowrap px-3"
@@ -740,7 +769,7 @@ let Dashboard = (props) => {
                     ))}
                   </form>
                 </ul>
-              </div>
+              </div> */}
 
               <div className="col mb-4">
                 <ul className="nav-item dropdown">
@@ -783,7 +812,7 @@ let Dashboard = (props) => {
                 </ul>
               </div>
 
-              <div className="col mb-4">
+              {/* <div className="col mb-4">
                 <ul className="nav-item dropdown">
                   <a
                     className="nav-link dropdown-toggle text-nowrap px-3"
@@ -824,7 +853,7 @@ let Dashboard = (props) => {
                     ))}
                   </form>
                 </ul>
-              </div>
+              </div> */}
 
               <div className="col mb-4">
                 <ul className="nav-item dropdown">
@@ -871,7 +900,7 @@ let Dashboard = (props) => {
             {arrElasticSearch.map((element, index) => (
               <div className="row">
                 <div
-                  className="card card-small card-post card-post--aside card-post--1 search-item-wrap"
+                  className="card card-small card-post card-post--aside card-post--1 search-item-wrap w-100"
                   style={{ cursor: "pointer" }}
                   onClick={() => {
                     history.push(`/detail?_id=${element._id}`);

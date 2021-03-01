@@ -209,13 +209,12 @@ let Detail = (props) => {
                 <div className="card card-small card-post card-post--aside card-post--1">
                   {/* <img className="card-img-top" src="images/content-management/display.png" alt="Card image cap"> */}
                   <div className="detail-image-box">
-                    <img src={xray} />
-                    <a
-                      href="#"
-                      className="card-post__category badge badge-pill badge-info"
-                    >
-                      {(data["tag"] ?? "").toUpperCase()}
-                    </a>
+                    <div className="detail-big-img mb-1">
+                      <img src={xray} />
+                      <a href="#" className="card-post__category badge badge-pill badge-info">
+                        {(data["tag"] ?? "").toUpperCase()}
+                      </a>
+                    </div>
                     <Slider {...settings}>
                       {[
                         1,
@@ -238,10 +237,7 @@ let Detail = (props) => {
                         1,
                       ].map(() => {
                         return (
-                          <div
-                            className="p-1"
-                            // style={{ width: "120px", height: "120px" }}
-                          >
+                          <div className="slider-btm-img">
                             <img src={xray} />
                           </div>
                         );
