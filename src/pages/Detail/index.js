@@ -7,7 +7,7 @@ import queryString from "query-string";
 import NotFound from "../../components/notFound";
 import { getDetailApi } from "../../services/api";
 import Slider from "react-slick";
-
+import {  urlEndPoint} from "../../services/axiosInstance";
 let Detail = (props) => {
   const id = queryString.parse(props.location.search)._id;
   const [data, setData] = useState();
@@ -341,12 +341,16 @@ let Detail = (props) => {
                     </div>
 
                     <div className="detail-btn-wrap">
+                    <a href={`${urlEndPoint}/api/v1/download/report/file?_id=${id}`} rel="noopener noreferrer" download>
+
                       <button type="button" className="btn btn-sm btn-primary">
                         Download Report
-                      </button>
+                      </button></a>
+                      <a href={`${urlEndPoint}/api/v1/download/dicom/file?_id=${id}`} rel="noopener noreferrer" download>
+
                       <button type="button" className="btn btn-sm btn-primary">
                         Download DICOM
-                      </button>
+                      </button></a>
                       <button type="button" className="btn btn-sm btn-primary">
                         Inquiry
                       </button>

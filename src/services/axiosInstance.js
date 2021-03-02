@@ -1,7 +1,8 @@
 import axios from "axios";
+export const urlEndPoint = 'http://104.211.119.180:8080';
 export function getaxiosInstance() {
   var axiosInstance;
-  var mainUrl = 'http://104.211.119.180:8080';
+  var mainUrl = urlEndPoint;
   if(localStorage.getItem("user") && localStorage.getItem("user") !== undefined){
 
     axiosInstance = axios.create({
