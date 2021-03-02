@@ -208,7 +208,7 @@ let Detail = (props) => {
               <div className="col">
                 <div className="card card-small card-post card-post--aside card-post--1">
                   {/* <img className="card-img-top" src="images/content-management/display.png" alt="Card image cap"> */}
-                  <div className="detail-image-box">
+                  {/* <div className="detail-image-box">
                     <div className="detail-big-img mb-1">
                       <img src={xray} />
                       <a href="#" className="card-post__category badge badge-pill badge-info">
@@ -244,6 +244,7 @@ let Detail = (props) => {
                       })}
                     </Slider>
                   </div>
+                 */}
                   <div className="card-body">
                     <h2 className="card-title">
                       <a className="text-fiord-blue" href="#">

@@ -5,6 +5,7 @@ import xray from "../../images/xray.jpg";
 import avatar from "../../images/0.jpg";
 import { getFiltersApi, getElasticSearchApi } from "../../services/api";
 import { useHistory } from "react-router-dom";
+import Slider from "@material-ui/core/Slider";
 
 let Dashboard = (props) => {
   const history = useHistory();
@@ -13,8 +14,9 @@ let Dashboard = (props) => {
   const [changeBodyPart, setChangeBodyPart] = useState(false);
   const [arrElasticSearch, setArrElasticSearch] = useState([]);
   const [rating, setRating] = useState(2);
-  const [ageMin, setAgeMin] = useState(99.9);
-  const [ageMax, setAgeMax] = useState(99.9);
+  const [age, setAge] = useState([0.1, 100]);
+  // const [ageMin, setAgeMin] = useState(0);
+  // const [ageMax, setAgeMax] = useState(99.9);
   const [arrGender, setArrGender] = useState([
     { name: "Female", check: false },
     { name: "Male", check: false },
@@ -84,7 +86,7 @@ let Dashboard = (props) => {
   }, [changeBodyPart]);
 
   useEffect(() => {
-    var query = `?patient_age=${ageMin},${ageMax}`;
+    var query = `?patient_age=${age[0]},${age[1]}`;
     var queryGender = convertQueryParam(arrGender);
     var queryFinding = convertQueryParam(arrFinding);
     var queryModality = convertQueryParam(arrModality);
@@ -436,47 +438,20 @@ let Dashboard = (props) => {
               <li className="nav-item">
                 <h3>AGE</h3>
                 <div className="age-range mb-1">
-                <div class='range-slider'>
-              <input type="range" min="0" max="99.9" step="1" v-model="sliderMin" value={ageMin} onPointerUp={() => {
-                      setChangeCheck(!changeCheck);
-                    }} onChange={(e) => {
-                var min = e.target.value;
-                var max = ageMax;
-                if (min > max) {
-                  var tmp = max;
-                  max = min;
-                  min = tmp;
-                }
-                      setAgeMin(min);
-                      setAgeMax(max);
-                    }}/>
-              <input type="range" min="0" max="99.9" step="1" v-model="sliderMax" value={ageMax} onPointerUp={() => {
-                      setChangeCheck(!changeCheck);
-                    }} onChange={(e) => {
-                      var min = ageMin;
-                var max = e.target.value;
-                if (min > max) {
-                  var tmp = max;
-                  max = min;
-                  min = tmp;
-                }
-                      setAgeMin(min);
-                      setAgeMax(max);
-                    
-                    }}/>
-            </div>
-                  {/* <input
-                    onPointerUp={() => {
-                      setChangeCheck(!changeCheck);
-                    }}
-                    type="range"
+                  <Slider
                     value={age}
-                    min="0.1"
-                    max="99.9"
-                    onChange={(e) => {
-                      setAge(e.target.value);
+                    onChange={(event, newValue) => {
+                      setAge(newValue);
                     }}
-                  ></input> */}
+                    valueLabelDisplay="auto"
+                    aria-labelledby="range-slider"
+                    getAriaValueText={(value) => {
+                      return `${value}`;
+                    }}
+                    onChangeCommitted={() => {
+                      setChangeCheck(!changeCheck);
+                    }}
+                  />
                 </div>
               </li>
 
@@ -906,7 +881,7 @@ let Dashboard = (props) => {
                     history.push(`/detail?_id=${element._id}`);
                   }}
                 >
-                  <div
+                  {/* <div
                     className="card-post__image"
                     style={{
                       backgroundImage: `url(${xray})`,
@@ -918,16 +893,16 @@ let Dashboard = (props) => {
                     >
                       {((element["_source"] ?? {})["tag"] ?? "").toUpperCase()}
                     </a>
-                  </div>
+                  </div> */}
                   <div className="card-body">
                     <h5 className="card-title">
                       <a className="text-fiord-blue" href="#">
                         {(element["_source"] ?? {})["title"] ?? ""}
                       </a>
                     </h5>
-                    <p className="card-text d-inline-block mb-3">
+                    {/* <p className="card-text d-inline-block mb-3">
                       {(element["_source"] ?? {})["description"] ?? ""}
-                    </p>
+                    </p> */}
 
                     <div className="list-tag-wrap">
                       <span className="text-muted">
