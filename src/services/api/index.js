@@ -5,8 +5,14 @@ export const getFiltersApi = async (filterType,queryParam) => {
 export const getElasticSearchApi = async (queryParam) => {
   return await getaxiosInstance().get(`/api/v1/elasticsearch/get${queryParam}`);
 };
+export const getElasticSearchByTextApi = async (str) => {
+  return await getaxiosInstance().get(`/api/v1/elasticsearch/search/based/on/all?_search=${str}`);
+};
 export const getDetailApi = async (id) => {
   return await getaxiosInstance().get(`/api/v1/elasticsearch/details/get?_id=${id}`);
+};
+export const inquireApi = async (params) => {
+  return await getaxiosInstance().post(`/api/v1/inquire/create`,params);
 };
 
 

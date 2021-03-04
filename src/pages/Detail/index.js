@@ -5,20 +5,52 @@ import xray from "../../images/xray.jpg";
 import avatar from "../../images/0.jpg";
 import queryString from "query-string";
 import NotFound from "../../components/notFound";
-import { getDetailApi } from "../../services/api";
-import Slider from "react-slick";
-import {  urlEndPoint} from "../../services/axiosInstance";
+import { getDetailApi, inquireApi } from "../../services/api";
+import { urlEndPoint } from "../../services/axiosInstance";
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
+
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 let Detail = (props) => {
   const id = queryString.parse(props.location.search)._id;
   const [data, setData] = useState();
+  const [popup, setPopup] = useState(false);
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+  const [resMessage, setResMessage] = useState("");
+  const [resType, setResType] = useState("");
   var settings = {
     dots: false,
     infinite: false,
     vertical: false,
     speed: 500,
-    slidesToShow: 4,swipeToSlide: true    
+    slidesToShow: 4, swipeToSlide: true
   };
-
+  const sendMessage = () => {
+    inquireApi({
+      inquire: {
+        email: email,
+        message: message
+      }
+    })
+      .then((res) => {
+        console.log(res);
+        if(res.status){setPopup(false);
+          setResType("success");
+        }
+        else
+        {
+          setResType("error");
+        }
+        setResMessage(res.message);
+      })
+      .catch((e) => {
+        console.log("ERROR");
+        console.log(e);
+      });
+  }
   useEffect(() => {
     if (id) {
       getDetailApi(id)
@@ -57,7 +89,7 @@ let Detail = (props) => {
                 className="main-navbar__search w-100 d-none d-md-flex d-lg-flex"
               >
                 <div className="input-group input-group-seamless ml-3">
-                  <div className="input-group-prepend">
+                  {/* <div className="input-group-prepend">
                     <div className="input-group-text">
                       <i className="fas fa-search"></i>
                     </div>
@@ -67,7 +99,7 @@ let Detail = (props) => {
                     type="text"
                     placeholder="Search for something..."
                     aria-label="Search"
-                  ></input>{" "}
+                  ></input>{" "} */}
                 </div>
               </form>
               <ul className="navbar-nav border-left flex-row header-user-wrap">
@@ -172,19 +204,7 @@ let Detail = (props) => {
                 <nav aria-label="breadcrumb">
                   <ol className="breadcrumb">
                     <li className="breadcrumb-item">
-                      <a href="#">Home</a>
-                    </li>
-                    <li className="breadcrumb-item">
-                      <a href="#">CT</a>
-                    </li>
-                    <li className="breadcrumb-item">
-                      <a href="#">Chest</a>
-                    </li>
-                    <li className="breadcrumb-item">
-                      <a href="#">India</a>
-                    </li>
-                    <li className="breadcrumb-item">
-                      <a href="#">4 Slice</a>
+                      <a href="/">Home</a>
                     </li>
                     <li className="breadcrumb-item active" aria-current="page">
                       Information
@@ -308,50 +328,52 @@ let Detail = (props) => {
                         <li>
                           <span className="text-muted">
                             <img src={"https://img.icons8.com/nolan/24/doctors-bag.png"} />
-                            Philips
+                            {data["manufacturer_info"] ?? ""}
                           </span>
                         </li>
                         <li>
                           <span className="text-muted">
                             <img src={"https://img.icons8.com/nolan/24/calendar.png"} />
-                            Study Date ranged from Jan 1 2010 to Feb 28 2020
+                            {data["study_date_information"] ?? ""}
                           </span>
                         </li>
                         <li>
                           <span className="text-muted">
                             <img src={"https://img.icons8.com/nolan/24/information.png"} />
-                            Non Contrast HRCT
+                            {data["procedure"] ?? ""}
                           </span>
                         </li>
                         <li>
                           <span className="text-muted">
                             <img src={"https://img.icons8.com/wired/24/4a90e2/electrical.png"} />
-                            32 Slice
+                            {data["technical_specification"] ?? ""}
                           </span>
                         </li>
                       </ul>
                     </div>
 
-                    <div className="rating-list">
+                    {/* <div className="rating-list">
                     <img src="https://img.icons8.com/emoji/32/000000/star-emoji.png"/>
               <img src="https://img.icons8.com/emoji/32/000000/star-emoji.png"/>
               <img src="https://img.icons8.com/emoji/32/000000/star-emoji.png"/>
               <img src="https://img.icons8.com/emoji/32/000000/star-emoji.png"/>
               <img src="https://img.icons8.com/emoji/32/000000/star-emoji.png"/>
-                    </div>
+                    </div> */}
 
                     <div className="detail-btn-wrap">
-                    <a href={`${urlEndPoint}/api/v1/download/report/file?_id=${id}`} rel="noopener noreferrer" download>
+                      <a href={`${urlEndPoint}/api/v1/download/report/file?_id=${id}`} rel="noopener noreferrer" download>
 
-                      <button type="button" className="btn btn-sm btn-primary">
-                        Download Report
+                        <button type="button" className="btn btn-sm btn-primary">
+                          Download Report
                       </button></a>
                       <a href={`${urlEndPoint}/api/v1/download/dicom/file?_id=${id}`} rel="noopener noreferrer" download>
 
-                      <button type="button" className="btn btn-sm btn-primary">
-                        Download DICOM
+                        <button type="button" className="btn btn-sm btn-primary">
+                          Download DICOM
                       </button></a>
-                      <button type="button" className="btn btn-sm btn-primary">
+                      <button type="button" className="btn btn-sm btn-primary" onClick={() => {
+                        setPopup(true);
+                      }}>
                         Inquiry
                       </button>
                     </div>
@@ -533,6 +555,40 @@ let Detail = (props) => {
           </footer>
         </main>
       </div>
+      {popup && <div className="promo-popup animated bounceIn">
+        <div className="promo-close" onClick={() => { setPopup(false); }}><i className="fas fa-times"></i></div>
+        <div className="pp-inner-content">
+          <h2>Intelpixel</h2>
+          <div className="form-group">
+            <label htmlFor="feFirstName">Email</label>
+            <input type="text" className="form-control" id="feFirstName" placeholder="abc@example.com" value={email} onChange={(e) => {
+              setEmail(e.target.value);
+            }}></input>
+          </div>
+          <div className="form-group">
+            <label htmlFor="feDescription">Message</label>
+            <textarea className="form-control" name="feDescription" rows="5" placeholder="Something on your mind? Tell us" value={message} onChange={(e) => {
+              setMessage(e.target.value);
+
+            }}></textarea>
+          </div>
+          <button type="submit" className="btn btn-accent" onClick={() => {
+            sendMessage();
+          }}>Send</button>
+        </div>
+      </div>
+      }
+       <Snackbar open={resMessage != ""} autoHideDuration={3000} onClose={()=>{
+         setResMessage("");
+         setResType("");
+       }}>
+        <Alert onClose={()=>{
+         setResMessage("");
+         setResType("");
+       }} severity={resType}>
+          {resMessage}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };

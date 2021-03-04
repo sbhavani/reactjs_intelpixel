@@ -3,7 +3,7 @@ import "./style.css";
 import intelpixel from "../../images/intelpixel.png";
 import xray from "../../images/xray.jpg";
 import avatar from "../../images/0.jpg";
-import { getFiltersApi, getElasticSearchApi } from "../../services/api";
+import { getFiltersApi, getElasticSearchApi,getElasticSearchByTextApi } from "../../services/api";
 import { useHistory } from "react-router-dom";
 import Slider from "@material-ui/core/Slider";
 
@@ -14,7 +14,7 @@ let Dashboard = (props) => {
   const [changeBodyPart, setChangeBodyPart] = useState(false);
   const [arrElasticSearch, setArrElasticSearch] = useState([]);
   const [rating, setRating] = useState(2);
-  const [age, setAge] = useState([0.1, 100]);
+  const [age, setAge] = useState([0.1, 99]);
   // const [ageMin, setAgeMin] = useState(0);
   // const [ageMax, setAgeMax] = useState(99.9);
   const [arrGender, setArrGender] = useState([
@@ -31,6 +31,7 @@ let Dashboard = (props) => {
   const [arrBodyPart, setArrBodyPart] = useState([]);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     // getFilters("finding", "");
@@ -42,6 +43,14 @@ let Dashboard = (props) => {
     var str = "";
     arr.forEach((element) => {
       if (element.check) str = str + "," + element.name.toLowerCase();
+    });
+    str = str == "" ? "" : str.substring(1);
+    return str;
+  };
+  const convertQueryParam2 = (arr) => {
+    var str = "";
+    arr.forEach((element) => {
+      if (element.check) str = str + "," + element.name[0].toLowerCase();
     });
     str = str == "" ? "" : str.substring(1);
     return str;
@@ -86,8 +95,9 @@ let Dashboard = (props) => {
   }, [changeBodyPart]);
 
   useEffect(() => {
+    if(search == ""){
     var query = `?patient_age=${age[0]},${age[1]}`;
-    var queryGender = convertQueryParam(arrGender);
+    var queryGender = convertQueryParam2(arrGender);
     var queryFinding = convertQueryParam(arrFinding);
     var queryModality = convertQueryParam(arrModality);
     var queryManufacturer = convertQueryParam(arrManufacturer);
@@ -134,10 +144,26 @@ let Dashboard = (props) => {
         query +
         `&end_study_date=${endDate == "" ? null : `${endDate}T00:00:00Z`}`;
     getElasticSearch(query);
+      }
   }, [changeCheck]);
 
   const getElasticSearch = (queryParam) => {
     getElasticSearchApi(queryParam)
+      .then((res) => {
+        if (res.status) {
+          setArrElasticSearch(res.data);
+        } else {
+          setArrElasticSearch([]);
+        }
+      })
+      .catch((e) => {
+        console.log("ERROR");
+        console.log(e);
+      });
+  };
+  
+  const getElasticSearchByText = (str) => {
+    getElasticSearchByTextApi(str)
       .then((res) => {
         if (res.status) {
           setArrElasticSearch(res.data);
@@ -259,6 +285,16 @@ let Dashboard = (props) => {
                 type="text"
                 placeholder="Search for something..."
                 aria-label="Search"
+                onChange={(e)=>{
+                  setSearch(e.target.value.trim());
+                  if(e.target.value.trim() == "")
+                  {
+                    setChangeCheck(!changeCheck);
+                  }else
+                  {
+                  getElasticSearchByText(e.target.value);
+                  }
+                }}
               ></input>
             </div>
           </form>
@@ -443,6 +479,8 @@ let Dashboard = (props) => {
                     onChange={(event, newValue) => {
                       setAge(newValue);
                     }}
+                    min={0.1}
+                    max={99}
                     valueLabelDisplay="auto"
                     aria-labelledby="range-slider"
                     getAriaValueText={(value) => {
@@ -507,6 +545,17 @@ let Dashboard = (props) => {
                     type="text"
                     placeholder="Search for something..."
                     aria-label="Search"
+                    onChange={(e)=>{
+                      setSearch(e.target.value.trim());
+
+                      if(e.target.value.trim() == "")
+                      {
+                        setChangeCheck(!changeCheck);
+                      }else
+                      {
+                      getElasticSearchByText(e.target.value);
+                      }
+                    }}
                   ></input>{" "}
                 </div>
               </form>
@@ -610,23 +659,8 @@ let Dashboard = (props) => {
             <div className="row mb-2">
               <nav aria-label="breadcrumb">
                 <ol className="breadcrumb">
-                  <li className="breadcrumb-item">
-                    <a href="#">Home</a>
-                  </li>
-                  <li className="breadcrumb-item">
-                    <a href="#">CT</a>
-                  </li>
-                  <li className="breadcrumb-item">
-                    <a href="#">Chest</a>
-                  </li>
-                  <li className="breadcrumb-item">
-                    <a href="#">India</a>
-                  </li>
-                  <li className="breadcrumb-item">
-                    <a href="#">4 Slice</a>
-                  </li>
-                  <li className="breadcrumb-item active" aria-current="page">
-                    Information
+                  <li className="breadcrumb-item active">
+                    Home
                   </li>
                 </ol>
               </nav>
