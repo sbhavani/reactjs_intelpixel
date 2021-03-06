@@ -3,7 +3,7 @@ import "./style.css";
 import intelpixel from "../../images/intelpixel.png";
 import xray from "../../images/xray.jpg";
 import avatar from "../../images/0.jpg";
-import { getFiltersApi, getElasticSearchApi,getElasticSearchByTextApi } from "../../services/api";
+import { getFiltersApi, getElasticSearchApi, getElasticSearchByTextApi } from "../../services/api";
 import { useHistory } from "react-router-dom";
 import Slider from "@material-ui/core/Slider";
 
@@ -95,56 +95,55 @@ let Dashboard = (props) => {
   }, [changeBodyPart]);
 
   useEffect(() => {
-    if(search == ""){
-    var query = `?patient_age=${age[0]},${age[1]}`;
-    var queryGender = convertQueryParam2(arrGender);
-    var queryFinding = convertQueryParam(arrFinding);
-    var queryModality = convertQueryParam(arrModality);
-    var queryManufacturer = convertQueryParam(arrManufacturer);
-    var queryDemographic = convertQueryParam(arrDemographic);
-    var queryDisease = convertQueryParam(arrDisease);
-    var queryProcedure = convertQueryParam(arrProcedure);
-    var queryTechnical = convertQueryParam(arrTechnical);
-    var queryBodyPart = convertQueryParam(arrBodyPart);
-    if (queryGender != "")
-      query = query + `&patient_sex=${queryGender == "" ? null : queryGender}`;
-    // if (queryFinding != "")
-    //   query = query + `&findings=${queryFinding == "" ? null : queryFinding}`;
-    if (queryModality != "")
-      query = query + `&modality=${queryModality == "" ? null : queryModality}`;
-    if (queryManufacturer != "")
-      query =
-        query +
-        `&manufacturer=${queryManufacturer == "" ? null : queryManufacturer}`;
-    if (queryDemographic != "")
-      query =
-        query +
-        `&geography=${queryDemographic == "" ? null : queryDemographic}`;
-    // if (queryDisease != "")
-    //   query = query + `&diesease=${queryDisease == "" ? null : queryDisease}`;
-    if (queryProcedure != "")
-      query =
-        query + `&procedure=${queryProcedure == "" ? null : queryProcedure}`;
-    // if (queryTechnical != "")
-    //   query =
-    //     query +
-    //     `&technical_specifications=${
-    //       queryTechnical == "" ? null : queryTechnical
-    //     }`;
-    if (queryBodyPart != "")
-      query = query + `&bodypart=${queryBodyPart == "" ? null : queryBodyPart}`;
-    if (startDate != "")
-      query =
-        query +
-        `&start_study_date=${
-          startDate == "" ? null : `${startDate}T00:00:00Z`
-        }`;
-    if (endDate != "")
-      query =
-        query +
-        `&end_study_date=${endDate == "" ? null : `${endDate}T00:00:00Z`}`;
-    getElasticSearch(query);
-      }
+    if (search == "") {
+      var query = `?patient_age=${age[0]},${age[1]}`;
+      var queryGender = convertQueryParam2(arrGender);
+      var queryFinding = convertQueryParam(arrFinding);
+      var queryModality = convertQueryParam(arrModality);
+      var queryManufacturer = convertQueryParam(arrManufacturer);
+      var queryDemographic = convertQueryParam(arrDemographic);
+      var queryDisease = convertQueryParam(arrDisease);
+      var queryProcedure = convertQueryParam(arrProcedure);
+      var queryTechnical = convertQueryParam(arrTechnical);
+      var queryBodyPart = convertQueryParam(arrBodyPart);
+      if (queryGender != "")
+        query = query + `&patient_sex=${queryGender == "" ? null : queryGender}`;
+      // if (queryFinding != "")
+      //   query = query + `&findings=${queryFinding == "" ? null : queryFinding}`;
+      if (queryModality != "")
+        query = query + `&modality=${queryModality == "" ? null : queryModality}`;
+      if (queryManufacturer != "")
+        query =
+          query +
+          `&manufacturer=${queryManufacturer == "" ? null : queryManufacturer}`;
+      if (queryDemographic != "")
+        query =
+          query +
+          `&geography=${queryDemographic == "" ? null : queryDemographic}`;
+      // if (queryDisease != "")
+      //   query = query + `&diesease=${queryDisease == "" ? null : queryDisease}`;
+      if (queryProcedure != "")
+        query =
+          query + `&procedure=${queryProcedure == "" ? null : queryProcedure}`;
+      // if (queryTechnical != "")
+      //   query =
+      //     query +
+      //     `&technical_specifications=${
+      //       queryTechnical == "" ? null : queryTechnical
+      //     }`;
+      if (queryBodyPart != "")
+        query = query + `&bodypart=${queryBodyPart == "" ? null : queryBodyPart}`;
+      if (startDate != "")
+        query =
+          query +
+          `&start_study_date=${startDate == "" ? null : `${startDate}T00:00:00Z`
+          }`;
+      if (endDate != "")
+        query =
+          query +
+          `&end_study_date=${endDate == "" ? null : `${endDate}T00:00:00Z`}`;
+      getElasticSearch(query);
+    }
   }, [changeCheck]);
 
   const getElasticSearch = (queryParam) => {
@@ -161,7 +160,7 @@ let Dashboard = (props) => {
         console.log(e);
       });
   };
-  
+
   const getElasticSearchByText = (str) => {
     getElasticSearchByTextApi(str)
       .then((res) => {
@@ -285,14 +284,12 @@ let Dashboard = (props) => {
                 type="text"
                 placeholder="Search for something..."
                 aria-label="Search"
-                onChange={(e)=>{
+                onChange={(e) => {
                   setSearch(e.target.value.trim());
-                  if(e.target.value.trim() == "")
-                  {
+                  if (e.target.value.trim() == "") {
                     setChangeCheck(!changeCheck);
-                  }else
-                  {
-                  getElasticSearchByText(e.target.value);
+                  } else {
+                    getElasticSearchByText(e.target.value);
                   }
                 }}
               ></input>
@@ -412,33 +409,84 @@ let Dashboard = (props) => {
               )} */}
 
               {arrModality.length > 0 && (
-                <li className="nav-item">
+                <li className="nav-item multi-select-wrap">
                   <h3>MODALITY</h3>
-                  {arrModality.map((element, index) => (
-                    <div
-                      key={index}
-                      className="custom-control custom-checkbox mb-1"
-                    >
-                      <input
-                        type="checkbox"
-                        className="custom-control-input"
-                        id={"MODALITY" + (element.name ?? "")}
-                        checked={element.check ?? false}
-                        onChange={(e) => {
-                          arrModality[index].check = !arrModality[index].check;
-                          setArrModality([...arrModality]);
-                          setChangeCheck(!changeCheck);
-                          setChangeModality(!changeModality);
-                        }}
-                      ></input>
-                      <label
-                        className="custom-control-label"
-                        htmlFor={"MODALITY" + (element.name ?? "")}
-                      >
-                        {element.name ?? ""}
-                      </label>
+                  <ul className="nav-item dropdown">
+                    <a className="nav-link dropdown-toggle text-nowrap" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                      <span className="d-md-inline-block">Select Modality</span>
+                    </a>
+                    <div className="dropdown-menu dropdown-menu-small">
+                      {arrModality.map((element, index) => (
+                        <div className="dropdown-item">
+                          <div
+                            key={index}
+                            className="custom-control custom-checkbox mb-1"
+                          >
+                            <input
+                              type="checkbox"
+                              className="custom-control-input"
+                              id={"MODALITY" + (element.name ?? "")}
+                              checked={element.check ?? false}
+                              onChange={(e) => {
+                                arrModality[index].check = !arrModality[index].check;
+                                setArrModality([...arrModality]);
+                                setChangeCheck(!changeCheck);
+                                setChangeModality(!changeModality);
+                              }}
+                            ></input>
+                            <label
+                              className="custom-control-label"
+                              htmlFor={"MODALITY" + (element.name ?? "")}
+                            >
+                              {element.name ?? ""}
+                            </label>
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                  ))}
+                  </ul>
+                </li>
+              )}
+              {arrBodyPart.length > 0 && (
+                <li className="nav-item multi-select-wrap">
+                  <h3>BODYPART</h3>
+                  <ul className="nav-item dropdown">
+                    <a className="nav-link dropdown-toggle text-nowrap" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                      <span className="d-md-inline-block">Select Bodypart</span>
+                    </a>
+                    <div className="dropdown-menu dropdown-menu-small">
+                      {arrBodyPart.map((element, index) => (
+                        <div className="dropdown-item">
+                          <div
+                            key={index}
+                            className="custom-control custom-checkbox mb-1"
+                          >
+                            <input
+                              type="checkbox"
+                              className="custom-control-input"
+                              id={"BODYPART" + (element.name ?? "")}
+                              checked={element.check ?? false}
+                              onChange={(e) => {
+                                arrBodyPart[index].check = !arrBodyPart[index]
+                                  .check;
+                                setArrBodyPart([...arrBodyPart]);
+                                setChangeCheck(!changeCheck);
+                                setChangeBodyPart(!changeBodyPart);
+                              }}
+                            ></input>
+                            <label
+                              className="custom-control-label"
+                              htmlFor={"BODYPART" + (element.name ?? "")}
+                            >
+                              {element.name ?? ""}
+                            </label>
+                          </div>
+                        </div>
+                      ))}
+
+                    </div>
+                  </ul>
+
                 </li>
               )}
               {arrManufacturer.length > 0 && (
@@ -545,15 +593,13 @@ let Dashboard = (props) => {
                     type="text"
                     placeholder="Search for something..."
                     aria-label="Search"
-                    onChange={(e)=>{
+                    onChange={(e) => {
                       setSearch(e.target.value.trim());
 
-                      if(e.target.value.trim() == "")
-                      {
+                      if (e.target.value.trim() == "") {
                         setChangeCheck(!changeCheck);
-                      }else
-                      {
-                      getElasticSearchByText(e.target.value);
+                      } else {
+                        getElasticSearchByText(e.target.value);
                       }
                     }}
                   ></input>{" "}
@@ -874,28 +920,27 @@ let Dashboard = (props) => {
                     aria-haspopup="true"
                     aria-expanded="false"
                   >
-                    <span className="d-md-inline-block">Bodypart</span>
+                    <span className="d-md-inline-block">Manufacturer</span>
                   </a>
                   <form className="dropdown-menu dropdown-menu-small">
-                    {arrBodyPart.map((element, index) => (
+                    {arrManufacturer.map((element, index) => (
                       <div className="dropdown-item">
                         <div className="custom-control custom-checkbox mb-1">
                           <input
                             type="checkbox"
                             className="custom-control-input"
-                            id={"Bodypart" + (element.name ?? "")}
+                            id={"Manufacturer" + (element.name ?? "")}
                             checked={element.check ?? false}
                             onChange={(e) => {
-                              arrBodyPart[index].check = !arrBodyPart[index]
-                                .check;
-                              setArrBodyPart([...arrBodyPart]);
-                              setChangeCheck(!changeCheck);
-                              setChangeBodyPart(!changeBodyPart);
+                              arrManufacturer[index].check = !arrManufacturer[index]
+                            .check;
+                          setArrManufacturer([...arrManufacturer]);
+                          setChangeCheck(!changeCheck);
                             }}
                           ></input>
                           <label
                             className="custom-control-label"
-                            htmlFor={"Bodypart" + (element.name ?? "")}
+                            htmlFor={"Manufacturer" + (element.name ?? "")}
                           >
                             {element.name}
                           </label>
@@ -983,6 +1028,13 @@ let Dashboard = (props) => {
                         ></i>
                         study date
                       </span>
+                      <span className="text-muted pl-0">
+                      <div
+                      className="pt-1 pb-1 badge-pill badge-info"
+                      style={{    display: "inline-block"}}
+                    >
+                      {((element["_source"] ?? {})["modality"] ?? "").toUpperCase()}
+                    </div></span>
                     </div>
                   </div>
                 </div>

@@ -37,11 +37,11 @@ let Detail = (props) => {
     })
       .then((res) => {
         console.log(res);
-        if(res.status){setPopup(false);
+        if (res.status) {
+          setPopup(false);
           setResType("success");
         }
-        else
-        {
+        else {
           setResType("error");
         }
         setResMessage(res.message);
@@ -361,16 +361,18 @@ let Detail = (props) => {
                     </div> */}
 
                     <div className="detail-btn-wrap">
-                      <a href={`${urlEndPoint}/api/v1/download/report/file?_id=${id}`} rel="noopener noreferrer" download>
+                      {/* <a href={`${urlEndPoint}/api/v1/download/report/file?_id=${id}`} rel="noopener noreferrer" download> */}
 
                         <button type="button" className="btn btn-sm btn-primary">
                           Download Report
-                      </button></a>
-                      <a href={`${urlEndPoint}/api/v1/download/dicom/file?_id=${id}`} rel="noopener noreferrer" download>
+                      </button>
+                      {/* </a>
+                      <a href={`${urlEndPoint}/api/v1/download/dicom/file?_id=${id}`} rel="noopener noreferrer" download> */}
 
                         <button type="button" className="btn btn-sm btn-primary">
                           Download DICOM
-                      </button></a>
+                      </button>
+                      {/* </a> */}
                       <button type="button" className="btn btn-sm btn-primary" onClick={() => {
                         setPopup(true);
                       }}>
@@ -578,14 +580,14 @@ let Detail = (props) => {
         </div>
       </div>
       }
-       <Snackbar open={resMessage != ""} autoHideDuration={3000} onClose={()=>{
-         setResMessage("");
-         setResType("");
-       }}>
-        <Alert onClose={()=>{
-         setResMessage("");
-         setResType("");
-       }} severity={resType}>
+      <Snackbar open={resMessage != ""} autoHideDuration={3000} onClose={() => {
+        setResMessage("");
+        setResType("");
+      }}>
+        <Alert onClose={() => {
+          setResMessage("");
+          setResType("");
+        }} severity={resType}>
           {resMessage}
         </Alert>
       </Snackbar>
