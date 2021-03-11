@@ -489,36 +489,85 @@ let Dashboard = (props) => {
 
                 </li>
               )}
-              {arrManufacturer.length > 0 && (
-                <li className="nav-item">
-                  <h3>MANUFACTURER</h3>
-                  {arrManufacturer.map((element, index) => (
-                    <div
-                      key={index}
-                      className="custom-control custom-checkbox mb-1"
-                    >
-                      <input
-                        type="checkbox"
-                        className="custom-control-input"
-                        id={"MANUFACTURER" + (element.name ?? "")}
-                        checked={element.check ?? false}
-                        onChange={(e) => {
-                          arrManufacturer[index].check = !arrManufacturer[index]
-                            .check;
-                          setArrManufacturer([...arrManufacturer]);
-                          setChangeCheck(!changeCheck);
-                        }}
-                      ></input>
-                      <label
-                        className="custom-control-label"
-                        htmlFor={"MANUFACTURER" + (element.name ?? "")}
-                      >
-                        {element.name ?? ""}
-                      </label>
+              {arrProcedure.length > 0 && (
+                <li className="nav-item multi-select-wrap">
+                  <h3>PROCEDURE</h3>
+                  <ul className="nav-item dropdown">
+                    <a className="nav-link dropdown-toggle text-nowrap" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                      <span className="d-md-inline-block">Select Procedure</span>
+                    </a>
+                    <div className="dropdown-menu dropdown-menu-small">
+                      {arrProcedure.map((element, index) => (
+                        <div className="dropdown-item">
+                          <div
+                            key={index}
+                            className="custom-control custom-checkbox mb-1"
+                          >
+                            <input
+                              type="checkbox"
+                              className="custom-control-input"
+                              id={"PROCEDURE" + (element.name ?? "")}
+                              checked={element.check ?? false}
+                              onChange={(e) => {
+                                arrProcedure[index].check = !arrProcedure[index]
+                                .check;
+                              setArrProcedure([...arrProcedure]);
+                              setChangeCheck(!changeCheck);
+                              }}
+                            ></input>
+                            <label
+                              className="custom-control-label"
+                              htmlFor={"PROCEDURE" + (element.name ?? "")}
+                            >
+                              {element.name ?? ""}
+                            </label>
+                          </div>
+                        </div>
+                      ))}
+
                     </div>
-                  ))}
+                  </ul>
+
                 </li>
               )}
+             
+                <li className="nav-item">
+                  <h3>UPLOAD DATE</h3>
+                  <div style={{ display: "grid" }} className="mb-2"
+                  >
+                    <label className="m-0 mb-1" htmlFor={"start_date"}>
+                      Start Date
+                      </label>
+                    <input
+                      style={{ width: "140px" }}
+                      type="date"
+                      value={startDate.toString()}
+                      max={endDate}
+                      onChange={(e) => {
+                        console.log(e.target.value);
+                        setStartDate(e.target.value);
+                        setChangeCheck(!changeCheck);
+                      }}
+                    />
+                  </div>
+                  <div style={{ display: "grid" }} className="mb-2"
+                  >
+                  <label className="m-0 mb-1" htmlFor={"end_date"}>
+                    End Date
+                      </label>
+                  <input
+                    style={{ width: "140px" }}
+                    type="date"
+                    value={endDate.toString()}
+                    min={startDate}
+                    onChange={(e) => {
+                      setEndDate(e.target.value);
+                      setChangeCheck(!changeCheck);
+                    }}
+                  /></div>
+                 
+                </li>
+             
               <li className="nav-item">
                 <h3>AGE</h3>
                 <div className="age-range mb-1">
@@ -712,7 +761,7 @@ let Dashboard = (props) => {
               </nav>
             </div>
 
-            <div className="row mb-2 top-category-wrap">
+            {/* <div className="row mb-2 top-category-wrap"> */}
               {/* <div className="col mb-4">
                 <ul className="nav-item dropdown">
                   <DatePicker
@@ -737,7 +786,7 @@ let Dashboard = (props) => {
                   />
                 </ul>
               </div> */}
-              <div className="col mb-4">
+              {/* <div className="col mb-4">
                 <ul className="nav-item dropdown">
                   <a
                     className="nav-link dropdown-toggle text-nowrap px-3"
@@ -783,7 +832,7 @@ let Dashboard = (props) => {
                     </div>
                   </form>
                 </ul>
-              </div>
+              </div> */}
 
               {/* <div className="col mb-4">
                 <ul className="nav-item dropdown">
@@ -826,7 +875,7 @@ let Dashboard = (props) => {
                 </ul>
               </div> */}
 
-              <div className="col mb-4">
+              {/* <div className="col mb-4">
                 <ul className="nav-item dropdown">
                   <a
                     className="nav-link dropdown-toggle text-nowrap px-3"
@@ -865,7 +914,7 @@ let Dashboard = (props) => {
                     ))}
                   </form>
                 </ul>
-              </div>
+              </div> */}
 
               {/* <div className="col mb-4">
                 <ul className="nav-item dropdown">
@@ -909,7 +958,7 @@ let Dashboard = (props) => {
                   </form>
                 </ul>
               </div> */}
-
+{/* 
               <div className="col mb-4">
                 <ul className="nav-item dropdown">
                   <a
@@ -933,9 +982,9 @@ let Dashboard = (props) => {
                             checked={element.check ?? false}
                             onChange={(e) => {
                               arrManufacturer[index].check = !arrManufacturer[index]
-                            .check;
-                          setArrManufacturer([...arrManufacturer]);
-                          setChangeCheck(!changeCheck);
+                                .check;
+                              setArrManufacturer([...arrManufacturer]);
+                              setChangeCheck(!changeCheck);
                             }}
                           ></input>
                           <label
@@ -950,7 +999,7 @@ let Dashboard = (props) => {
                   </form>
                 </ul>
               </div>
-            </div>
+            </div> */}
             {arrElasticSearch.map((element, index) => (
               <div className="row">
                 <div
@@ -979,9 +1028,9 @@ let Dashboard = (props) => {
                         {(element["_source"] ?? {})["title"] ?? ""}
                       </a>
                     </h5>
-                    {/* <p className="card-text d-inline-block mb-3">
-                      {(element["_source"] ?? {})["description"] ?? ""}
-                    </p> */}
+                    <p className="card-text d-inline-block mb-3">
+                      {(element["_source"] ?? {})["report_info"] ?? ""}
+                    </p>
 
                     <div className="list-tag-wrap">
                       <span className="text-muted">
@@ -1029,12 +1078,12 @@ let Dashboard = (props) => {
                         study date
                       </span>
                       <span className="text-muted pl-0">
-                      <div
-                      className="pt-1 pb-1 badge-pill badge-info"
-                      style={{    display: "inline-block"}}
-                    >
-                      {((element["_source"] ?? {})["modality"] ?? "").toUpperCase()}
-                    </div></span>
+                        <div
+                          className="pt-1 pb-1 badge-pill badge-info"
+                          style={{ display: "inline-block" }}
+                        >
+                          {((element["_source"] ?? {})["modality"] ?? "").toUpperCase()}
+                        </div></span>
                     </div>
                   </div>
                 </div>
