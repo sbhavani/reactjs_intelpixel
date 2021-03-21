@@ -14,6 +14,12 @@ export const getDetailApi = async (id) => {
 export const inquireApi = async (params) => {
   return await getaxiosInstance().post(`/api/v1/inquire/create`,params);
 };
+export const signinApi = async (params) => {
+  return await getaxiosInstance().post(`/api/v1/newUsers/login`,params);
+};
+export const signupApi = async (params) => {
+  return await getaxiosInstance().post(`/api/v1/newUsers/create/and/update`,params);
+};
 
 
 // export const RegistrationApi = async (params) => {
