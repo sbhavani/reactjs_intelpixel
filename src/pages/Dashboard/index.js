@@ -6,8 +6,15 @@ import avatar from "../../images/0.jpg";
 import { getFiltersApi, getElasticSearchApi, getElasticSearchByTextApi } from "../../services/api";
 import { useHistory } from "react-router-dom";
 import Slider from "@material-ui/core/Slider";
+var elasticsearch = require('elasticsearch');
 
 let Dashboard = (props) => {
+  window.addEventListener('scroll', function() {
+    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+       console.log("you're at the bottom of the page");
+       // Show loading spinner and make fetch request to api
+    }
+ });
   const history = useHistory();
   const [changeCheck, setChangeCheck] = useState(false);
   const [changeModality, setChangeModality] = useState(false);
@@ -32,11 +39,22 @@ let Dashboard = (props) => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [search, setSearch] = useState("");
-
+  var client = new elasticsearch.Client({
+    host: 'https://intelpixel:JRm35eN5SisT!@search-dmi-rvb7nuse6jtq4qu6hp3zggcgt4.us-east-1.es.amazonaws.com' 
+    // http://localhost:9200/ 
+    // http://root:12345@localhost:9200/ 
+    // If you have set username and password
+});
   useEffect(() => {
     // getFilters("finding", "");
     getFilters("demographic", "");
     getFilters("modality", "");
+    window.addEventListener('scroll', function() {
+      if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+         console.log("you're at the bottom of the page");
+         // Show loading spinner and make fetch request to api
+      }
+   });
   }, []);
 
   const convertQueryParam = (arr) => {
@@ -96,9 +114,15 @@ let Dashboard = (props) => {
 
   useEffect(() => {
     if (search == "") {
+      var must = [];
+      must.push({
+        range: {
+          "instances.patient_age": { gte: age[0], lte: age[1] }
+        }
+      });
       var query = `?patient_age=${age[0]},${age[1]}`;
       var queryGender = convertQueryParam2(arrGender);
-      var queryFinding = convertQueryParam(arrFinding);
+      // var queryFinding = convertQueryParam(arrFinding);
       var queryModality = convertQueryParam(arrModality);
       var queryManufacturer = convertQueryParam(arrManufacturer);
       var queryDemographic = convertQueryParam(arrDemographic);
@@ -106,59 +130,94 @@ let Dashboard = (props) => {
       var queryProcedure = convertQueryParam(arrProcedure);
       var queryTechnical = convertQueryParam(arrTechnical);
       var queryBodyPart = convertQueryParam(arrBodyPart);
-      if (queryGender != "")
-        query = query + `&patient_sex=${queryGender == "" ? null : queryGender}`;
-      // if (queryFinding != "")
-      //   query = query + `&findings=${queryFinding == "" ? null : queryFinding}`;
-      if (queryModality != "")
-        query = query + `&modality=${queryModality == "" ? null : queryModality}`;
-      if (queryManufacturer != "")
-        query =
-          query +
-          `&manufacturer=${queryManufacturer == "" ? null : queryManufacturer}`;
+      if (queryGender != "" ){
+      
+      must.push({
+        terms: {
+          "instances.patient_sex": queryGender.replace('Female','F').replace('Male','M').split(',')
+        }
+      });
+  }
+      if (queryModality != "" && !queryModality.toLowerCase().includes("all")){
+        must.push({
+          terms: {
+            "modality": queryModality.split(',')
+          }
+        });
+      }
+      if (queryProcedure != ""){
+        must.push({
+          terms: {
+            "procedure": queryProcedure.split(',')
+          }
+        });
+      }
+      if (queryBodyPart != ""){
+        must.push({
+          terms: {
+            "instances.bodypart": queryBodyPart.split(',')
+          }
+        });
+      }
       if (queryDemographic != "")
-        query =
-          query +
-          `&geography=${queryDemographic == "" ? null : queryDemographic}`;
-      // if (queryDisease != "")
-      //   query = query + `&diesease=${queryDisease == "" ? null : queryDisease}`;
-      if (queryProcedure != "")
-        query =
-          query + `&procedure=${queryProcedure == "" ? null : queryProcedure}`;
-      // if (queryTechnical != "")
-      //   query =
-      //     query +
-      //     `&technical_specifications=${
-      //       queryTechnical == "" ? null : queryTechnical
-      //     }`;
-      if (queryBodyPart != "")
-        query = query + `&bodypart=${queryBodyPart == "" ? null : queryBodyPart}`;
-      if (startDate != "")
-        query =
-          query +
-          `&start_study_date=${startDate == "" ? null : `${startDate}T00:00:00Z`
-          }`;
-      if (endDate != "")
-        query =
-          query +
-          `&end_study_date=${endDate == "" ? null : `${endDate}T00:00:00Z`}`;
-      getElasticSearch(query);
+      {
+        must.push({
+          terms: {
+            "instances.geography": queryDemographic.split(',')
+          }
+        });
+      }
+      let studyDateQuery = {}
+      let start_study_date = startDate == "" ? null : `${startDate}T00:00:00Z`;
+      let end_study_date = endDate == "" ? null : `${endDate}T00:00:00Z`;
+
+      if (start_study_date && end_study_date) {
+        studyDateQuery["instances.study_date"] = { gte: start_study_date, lte: end_study_date }
+  
+      } else if (start_study_date) {
+        studyDateQuery["instances.study_date"] = { gte: start_study_date }
+      } else if (end_study_date) {
+        studyDateQuery["instances.study_date"] = { lte: end_study_date }
+      }
+      if (Object.keys(studyDateQuery).length != 0) {
+        must.push({
+          range: studyDateQuery
+        });
+      }
+      getElasticSearch(must);
     }
   }, [changeCheck]);
 
-  const getElasticSearch = (queryParam) => {
-    getElasticSearchApi(queryParam)
-      .then((res) => {
-        if (res.status) {
-          setArrElasticSearch(res.data);
-        } else {
-          setArrElasticSearch([]);
+  const getElasticSearch = (must) => {
+    client.search({
+      index: "dmi1", // Your index name for example crud
+      type: "_doc",from:"0",size:"10",
+      body: {
+        "_source": ["modality", "procedure", "report", "instances"],
+        query: {
+          bool: {
+            must: must
+          }
         }
-      })
-      .catch((e) => {
-        console.log("ERROR");
-        console.log(e);
-      });
+      } // Your index name for example doc    
+    }).then(function (resp) {
+      setArrElasticSearch(resp.hits.hits);
+      console.log(resp);
+    }, function (err) {
+      console.log(err.message);
+    });
+    // getElasticSearchApi(`?patient_age=${age[0]},${age[1]}`)
+    //   .then((res) => {
+    //     if (res.status) {
+    //       setArrElasticSearch(res.data);
+    //     } else {
+    //       setArrElasticSearch([]);
+    //     }
+    //   })
+    //   .catch((e) => {
+    //     console.log("ERROR");
+    //     console.log(e);
+    //   });
   };
 
   const getElasticSearchByText = (str) => {
@@ -748,7 +807,7 @@ let Dashboard = (props) => {
             </nav>
           </div>
 
-          <div className="main-content-container container-fluid px-4">
+          <div className="main-content-container container-fluid px-4" >
             <div className="page-header row no-gutters py-4"></div>
 
             <div className="row mb-2">
@@ -1025,18 +1084,18 @@ let Dashboard = (props) => {
                   <div className="card-body">
                     <h5 className="card-title">
                       <a className="text-fiord-blue" href="#">
-                        {(element["_source"] ?? {})["title"] ?? ""}
+                        {(element["_source"] ?? {})["modality"] ?? ""}
                       </a>
                     </h5>
                     <p className="card-text d-inline-block mb-3">
-                      {(element["_source"] ?? {})["report_info"] ?? ""}
+                      {(element["_source"] ?? {})["report"] ?? ""}
                     </p>
 
                     <div className="list-tag-wrap">
                       <span className="text-muted">
                         <i
                           className={
-                            (element["_source"] ?? {})["age"] ?? false
+                            (((element["_source"] ?? {})["instances"] ?? {})["patient_age"] != null && ((element["_source"] ?? {})["instances"] ?? {})["patient_age"].trim() != "")
                               ? "fa fa-check"
                               : "fas fa-times"
                           }
@@ -1047,7 +1106,7 @@ let Dashboard = (props) => {
                       <span className="text-muted">
                         <i
                           className={
-                            (element["_source"] ?? {})["gender"] ?? false
+                            (((element["_source"] ?? {})["instances"] ?? {})["patient_sex"] != null && ((element["_source"] ?? {})["instances"] ?? {})["patient_sex"].trim() != "")
                               ? "fa fa-check"
                               : "fas fa-times"
                           }
@@ -1058,7 +1117,7 @@ let Dashboard = (props) => {
                       <span className="text-muted">
                         <i
                           className={
-                            (element["_source"] ?? {})["report"] ?? false
+                            ((element["_source"] ?? {})["report"] != null && (element["_source"] ?? {})["report"].trim() != "")
                               ? "fa fa-check"
                               : "fas fa-times"
                           }
@@ -1069,7 +1128,7 @@ let Dashboard = (props) => {
                       <span className="text-muted">
                         <i
                           className={
-                            (element["_source"] ?? {})["study_date"] ?? false
+                            (((element["_source"] ?? {})["instances"] ?? {})["study_date"] != null && ((element["_source"] ?? {})["instances"] ?? {})["study_date"].trim() != "")
                               ? "fa fa-check"
                               : "fas fa-times"
                           }
