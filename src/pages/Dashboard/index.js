@@ -191,7 +191,7 @@ let Dashboard = (props) => {
   const getElasticSearch = (must) => {
     client.search({
       index: "dmi1", // Your index name for example crud
-      type: "_doc",from:"0",size:"10",
+      type: "_doc",from:"0",size:"20",
       body: {
         "_source": ["modality", "procedure", "report", "instances"],
         query: {
@@ -221,18 +221,49 @@ let Dashboard = (props) => {
   };
 
   const getElasticSearchByText = (str) => {
-    getElasticSearchByTextApi(str)
-      .then((res) => {
-        if (res.status) {
-          setArrElasticSearch(res.data);
-        } else {
-          setArrElasticSearch([]);
-        }
-      })
-      .catch((e) => {
-        console.log("ERROR");
-        console.log(e);
-      });
+    let _search = str.split(' ');
+
+    let shouldArr = [
+			{ terms: { modality: _search } },
+			{ terms: { procedure: _search } },
+			{ terms: { cpt: _search } },
+			{ terms: { "instances.study_date": _search } },
+			{ terms: { "instances.manufacturer": _search } },
+			{ terms: { "instances.manufacturer_model_name": _search } },
+			{ terms: { "instances.patient_dob": _search } },
+			{ terms: { "instances.patient_sex": _search } },
+			{ terms: { "instances.patient_age": _search } },
+			{ terms: { "instances.detector_model_name": _search } }
+
+		] ;
+    client.search({
+      index: "dmi1", // Your index name for example crud
+      type: "_doc",from:"0",size:"20",
+      body: {
+				query: {
+					bool: {
+						should: shouldArr
+					}
+				}
+			}
+    }).then(function (resp) {
+      setArrElasticSearch(resp.hits.hits);
+      console.log(resp);
+    }, function (err) {
+      console.log(err.message);
+    });
+    // getElasticSearchByTextApi(str)
+    //   .then((res) => {
+    //     if (res.status) {
+    //       setArrElasticSearch(res.data);
+    //     } else {
+    //       setArrElasticSearch([]);
+    //     }
+    //   })
+    //   .catch((e) => {
+    //     console.log("ERROR");
+    //     console.log(e);
+    //   });
   };
 
   const getFilters = (filterType, queryParam) => {
