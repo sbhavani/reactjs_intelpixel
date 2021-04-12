@@ -9,6 +9,7 @@ import { getDetailApi, inquireApi } from "../../services/api";
 import { urlEndPoint } from "../../services/axiosInstance";
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
+var elasticsearch = require('elasticsearch');
 
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -21,6 +22,12 @@ let Detail = (props) => {
   const [message, setMessage] = useState("");
   const [resMessage, setResMessage] = useState("");
   const [resType, setResType] = useState("");
+  var client = new elasticsearch.Client({
+    host: 'https://intelpixel:JRm35eN5SisT!@search-dmi-rvb7nuse6jtq4qu6hp3zggcgt4.us-east-1.es.amazonaws.com' 
+    // http://localhost:9200/ 
+    // http://root:12345@localhost:9200/ 
+    // If you have set username and password
+});
   var settings = {
     dots: false,
     infinite: false,
@@ -53,16 +60,30 @@ let Detail = (props) => {
   }
   useEffect(() => {
     if (id) {
-      getDetailApi(id)
-        .then((res) => {
-          if (res.status) {
-            setData(res.data);
-          }
-        })
-        .catch((e) => {
-          console.log("ERROR");
-          console.log(e);
-        });
+      client.get({
+        index: "dmi1", // Your index name for example crud
+        type: "_doc",
+        id: id,
+        // body: {
+        //   "_source": ["modality", "procedure", "report", "instances"],
+        // } // Your index name for example doc    
+      }).then(function (resp) {
+        setData(resp['_source']);
+        // setArrElasticSearch(resp.hits.hits);
+        console.log(resp);
+      }, function (err) {
+        console.log(err.message);
+      });
+      // getDetailApi(id)
+      //   .then((res) => {
+      //     if (res.status) {
+      //       setData(res.data);
+      //     }
+      //   })
+      //   .catch((e) => {
+      //     console.log("ERROR");
+      //     console.log(e);
+      //   });
     }
   }, []);
   if (!id) return <NotFound />;
@@ -268,18 +289,18 @@ let Detail = (props) => {
                   <div className="card-body">
                     <h2 className="card-title">
                       <a className="text-fiord-blue" href="#">
-                        {data["title"] ?? ""}
+                        {data["modality"] ?? ""}
                       </a>
                     </h2>
                     <div className="search-detail-info">
-                      <p>{data["description"] ?? ""}</p>
+                      <p>{data["report"] ?? ""}</p>
                     </div>
 
                     <div className="list-tag-wrap">
                       <span className="text-muted">
                         <i
                           className={
-                            data["age"] ?? false
+                            ((data["instances"] ?? {})["patient_age"] != null && (data["instances"] ?? {})["patient_age"].trim() != "")
                               ? "fa fa-check"
                               : "fas fa-times"
                           }
@@ -291,7 +312,7 @@ let Detail = (props) => {
                       <span className="text-muted">
                         <i
                           className={
-                            data["gender"] ?? false
+                            ((data["instances"] ?? {})["patient_sex"] != null && (data["instances"] ?? {})["patient_sex"].trim() != "")
                               ? "fa fa-check"
                               : "fas fa-times"
                           }
@@ -302,7 +323,7 @@ let Detail = (props) => {
                       <span className="text-muted">
                         <i
                           className={
-                            data["report"] ?? false
+                            (data["report"] != null && data["report"].trim() != "")
                               ? "fa fa-check"
                               : "fas fa-times"
                           }
@@ -313,7 +334,7 @@ let Detail = (props) => {
                       <span className="text-muted">
                         <i
                           className={
-                            data["study_date"] ?? false
+                            ((data["instances"] ?? {})["study_date"] != null && (data["instances"] ?? {})["study_date"].trim() != "")
                               ? "fa fa-check"
                               : "fas fa-times"
                           }
@@ -328,13 +349,13 @@ let Detail = (props) => {
                         <li>
                           <span className="text-muted">
                             <img src={"https://img.icons8.com/nolan/24/doctors-bag.png"} />
-                            {data["manufacturer_info"] ?? ""}
+                            {(data["instances"] ?? {})["manufacturer"] ?? ""}
                           </span>
                         </li>
                         <li>
                           <span className="text-muted">
                             <img src={"https://img.icons8.com/nolan/24/calendar.png"} />
-                            {data["study_date_information"] ?? ""}
+                            {`Study Date is around ${(data["instances"] ?? {})["study_date"] ?? ""}`}
                           </span>
                         </li>
                         <li>
@@ -346,7 +367,7 @@ let Detail = (props) => {
                         <li>
                           <span className="text-muted">
                             <img src={"https://img.icons8.com/wired/24/4a90e2/electrical.png"} />
-                            {data["technical_specification"] ?? ""}
+                            {(data["instances"] ?? {})["manufacturer_model_name"] ?? ""}
                           </span>
                         </li>
                       </ul>
